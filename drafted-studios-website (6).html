@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drafted Studios — GTA's Athlete Content Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --dark: #111111;
+    --mid: #1a1a1a;
+    --gold: #C9A840;
+    --gold-light: #F0D060;
+    --gold-dim: rgba(201,168,64,0.15);
+    --white: #F5F3EE;
+    --muted: #888;
+    --border: rgba(201,168,64,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+
+  .cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.12s ease;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 24px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(8,8,8,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--gold); }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-cta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 10px 24px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .nav-cta:hover { background: var(--gold-light); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0 60px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(201,168,64,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(201,168,64,0.04) 0%, transparent 60%);
+  }
+
+  /* Grain overlay */
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .hero-grid-line {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+    right: 40%;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 680px;
+  }
+
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 10vw, 132px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 420px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .btn-primary {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 16px 36px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .btn-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.2s;
+  }
+
+  .btn-secondary:hover { gap: 14px; }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1.2s forwards;
+  }
+
+  .hero-scroll span {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scroll-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gold);
+    animation: scrollLine 2s ease infinite;
+  }
+
+  .hero-counter {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: right;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+
+  .hero-counter-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: rgba(201,168,64,0.08);
+    line-height: 1;
+  }
+
+  .hero-counter-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    overflow: hidden;
+    background: var(--dark);
+  }
+
+  .marquee {
+    display: flex;
+    gap: 60px;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 60px;
+  }
+
+  .marquee-dot {
+    width: 5px;
+    height: 5px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* SECTION BASE */
+  section {
+    padding: 120px 60px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 6vw, 72px);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+
+  .section-divider {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin-bottom: 60px;
+  }
+
+  /* ABOUT */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .about-text p {
+    font-size: 15px;
+    color: #aaa;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .about-text strong { color: var(--white); font-weight: 500; }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .stat-box {
+    background: var(--mid);
+    padding: 32px 28px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+
+  .stat-box:hover { border-color: var(--gold); }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* SERVICES */
+  #services { background: var(--dark); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+  }
+
+  .service-card {
+    background: var(--black);
+    padding: 40px 36px;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .service-card:hover { border-color: var(--border); }
+  .service-card:hover::before { transform: scaleX(1); }
+
+  .service-icon {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .service-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.06em;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  .service-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .service-price {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .service-price-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* PORTFOLIO */
+  #portfolio { background: var(--black); }
+
+  .portfolio-note {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    font-style: italic;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .portfolio-item {
+    aspect-ratio: 3/4;
+    background: var(--mid);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+  }
+
+  .portfolio-item:first-child {
+    grid-column: span 2;
+    aspect-ratio: unset;
+  }
+
+  .portfolio-placeholder {
+    text-align: center;
+    padding: 40px;
+  }
+
+  .portfolio-placeholder-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+  }
+
+  .portfolio-placeholder-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .portfolio-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: flex-end;
+    padding: 24px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .portfolio-item:hover .portfolio-overlay { opacity: 1; }
+
+  .portfolio-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  /* PRICING */
+  #pricing { background: var(--dark); }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2px;
+  }
+
+  .pricing-card {
+    background: var(--black);
+    padding: 40px 32px;
+    border: 1px solid var(--border);
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .pricing-card.featured {
+    border-color: var(--gold);
+  }
+
+  .pricing-card.featured::after {
+    content: 'POPULAR';
+    position: absolute;
+    top: -1px;
+    right: 24px;
+    background: var(--gold);
+    color: var(--black);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    padding: 5px 10px;
+  }
+
+  .pricing-card:hover { border-color: var(--gold); }
+
+  .pricing-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.06em;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .pricing-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  .pricing-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .pricing-period {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 28px;
+  }
+
+  .pricing-features {
+    list-style: none;
+    margin-bottom: 32px;
+  }
+
+  .pricing-features li {
+    font-size: 13px;
+    color: #aaa;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pricing-features li::before {
+    content: '—';
+    color: var(--gold);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .pricing-btn {
+    display: block;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .pricing-btn-outline {
+    border: 1px solid var(--gold);
+    color: var(--gold);
+  }
+
+  .pricing-btn-outline:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  .pricing-btn-filled {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  .pricing-btn-filled:hover { background: var(--gold-light); }
+
+  .portfolio-rate {
+    margin-top: 40px;
+    padding: 24px 32px;
+    border: 1px solid var(--border);
+    background: var(--gold-dim);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .portfolio-rate-icon { font-size: 24px; }
+
+  .portfolio-rate-text {
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.6;
+  }
+
+  .portfolio-rate-text strong { color: var(--gold); }
+
+  /* CONTACT */
+  #contact { background: var(--black); }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .contact-info p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 40px;
+  }
+
+  .contact-detail {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contact-detail-icon {
+    font-size: 18px;
+    width: 40px;
+  }
+
+  .contact-detail-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .contact-detail-value {
+    font-size: 14px;
+    color: var(--white);
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    background: var(--mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    appearance: none;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--gold);
+  }
+
+  .form-textarea { 
+    resize: vertical; 
+    min-height: 120px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-submit {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    border: none;
+    padding: 18px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+
+  .form-submit:hover { background: var(--gold-light); }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--dark);
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    color: var(--white);
+  }
+
+  .footer-logo span { color: var(--gold); }
+
+  .footer-tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 24px;
+  }
+
+  .footer-social a {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .footer-social a:hover { color: var(--gold); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes scrollLine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .nav-links, .hero-counter { display: none; }
+    .hero { padding: 120px 24px 80px; }
+    section { padding: 80px 24px; }
+    .about, .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+    .portfolio-grid { grid-template-columns: 1fr 1fr; }
+    .portfolio-item:first-child { grid-column: span 2; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 20px; text-align: center; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero-scroll { left: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">DRAFTED <span>STUDIOS</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Book Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-line"></div>
+
+  <div class="hero-content">
+    <div class="hero-label">GTA's Athlete Content Studio</div>
+    <h1>LET'S GET<br>YOU <em>DRAFTED.</em></h1>
+    <p class="hero-sub">We create premium promo shoots, hype edits, and personal brand content for undiscovered athletes across the Greater Toronto Area.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Book Your Session</a>
+      <a href="#services" class="btn-secondary">View Services →</a>
+    </div>
+  </div>
+
+  <div class="hero-counter">
+    <div class="hero-counter-num">GTA</div>
+    <div class="hero-counter-label">Wide Coverage</div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <div class="marquee-item">Promo Shoots <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Hype Edits <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Recruitment Packages <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Personal Branding <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Content Strategy <span class="marquee-dot"></span></div>
+    <div class="marquee-item">GTA-Wide <span class="marquee-dot"></span></div>
+    <div class="marquee-item">All Sports <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Promo Shoots <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Hype Edits <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Recruitment Packages <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Personal Branding <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Content Strategy <span class="marquee-dot"></span></div>
+    <div class="marquee-item">GTA-Wide <span class="marquee-dot"></span></div>
+    <div class="marquee-item">All Sports <span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about">
+    <div class="about-text">
+      <div class="section-label">Who We Are</div>
+      <h2 class="section-title">WE MAKE ATHLETES IMPOSSIBLE TO IGNORE</h2>
+      <div class="section-divider"></div>
+      <p>Drafted Studios is a <strong>GTA-based athlete content agency</strong> built by athletes, for athletes. We exist for the undiscovered talent — the players who have the skill but not the spotlight.</p>
+      <p>From promo shoots to hype edits to full recruitment packages, we create the content that gets you <strong>seen by scouts, coaches, and the world.</strong></p>
+      <p>We cover every sport, every level, across the entire Greater Toronto Area.</p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-box">
+        <div class="stat-num">GTA</div>
+        <div class="stat-label">Wide Coverage</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">ALL</div>
+        <div class="stat-label">Sports Covered</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">4K</div>
+        <div class="stat-label">Video Quality</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">48H</div>
+        <div class="stat-label">Turnaround</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-label">What We Do</div>
+  <h2 class="section-title">OUR SERVICES</h2>
+  <div class="section-divider"></div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">📸</div>
+      <div class="service-name">PROMO SHOOT</div>
+      <p class="service-desc">1–1.5 hr professional shoot. 15–20 edited photos delivered. Indoor or outdoor. Built for profiles, recruitment, and social media.</p>
+      <div class="service-price">$120 – $175</div>
+      <div class="service-price-note">per session</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🎬</div>
+      <div class="service-name">HYPE EDIT</div>
+      <p class="service-desc">30–60 second vertical edit ready for Reels and TikTok. Music, cuts, motion graphics. Drop it before your next big game.</p>
+      <div class="service-price">$80 – $120</div>
+      <div class="service-price-note">per video</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">📱</div>
+      <div class="service-name">CONTENT PACK</div>
+      <p class="service-desc">Monthly retainer. 2 shoots + 4 short-form edits + captions. Stay consistent, stay visible, stay in the conversation.</p>
+      <div class="service-price">$250 – $350</div>
+      <div class="service-price-note">per month</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🏆</div>
+      <div class="service-name">RECRUITMENT PKG</div>
+      <p class="service-desc">Full shoot + 2–3 minute highlight reel + athlete bio card. Built specifically to get the attention of college coaches and scouts.</p>
+      <div class="service-price">$300 – $450</div>
+      <div class="service-price-note">per package</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">⚡</div>
+      <div class="service-name">BRAND STARTER</div>
+      <p class="service-desc">Everything you need to launch your personal brand. Promo shoot + hype edit + athlete bio + social media profile optimization.</p>
+      <div class="service-price">$350 – $500</div>
+      <div class="service-price-note">full bundle</div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="section-label">Our Work</div>
+  <h2 class="section-title">PORTFOLIO</h2>
+  <div class="section-divider"></div>
+  <p class="portfolio-note">Portfolio coming soon — follow @draftedcontent on Instagram to see our latest work.</p>
+  <div class="portfolio-grid">
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">
+        <div class="portfolio-placeholder-icon">🎬</div>
+        <div class="portfolio-placeholder-text">Featured Work</div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-tag">Coming Soon</div>
+      </div>
+    </div>
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">
+        <div class="portfolio-placeholder-icon">📸</div>
+        <div class="portfolio-placeholder-text">Promo Shoot</div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-tag">Coming Soon</div>
+      </div>
+    </div>
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">
+        <div class="portfolio-placeholder-icon">⚡</div>
+        <div class="portfolio-placeholder-text">Hype Edit</div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-tag">Coming Soon</div>
+      </div>
+    </div>
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">
+        <div class="portfolio-placeholder-icon">🏆</div>
+        <div class="portfolio-placeholder-text">Recruitment</div>
+      </div>
+      <div class="portfolio-overlay">
+        <div class="portfolio-tag">Coming Soon</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-label">Investment</div>
+  <h2 class="section-title">PRICING</h2>
+  <div class="section-divider"></div>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">PROMO SHOOT</div>
+      <p class="pricing-desc">Professional stills for your profile, social media, or recruitment.</p>
+      <div class="pricing-amount">$150</div>
+      <div class="pricing-period">starting from</div>
+      <ul class="pricing-features">
+        <li>1–1.5 hour session</li>
+        <li>15–20 edited photos</li>
+        <li>Indoor or outdoor</li>
+        <li>48hr delivery</li>
+      </ul>
+      <a href="#contact" class="pricing-btn pricing-btn-outline">Book Now</a>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">HYPE EDIT</div>
+      <p class="pricing-desc">Cinematic short-form video built for Reels and TikTok.</p>
+      <div class="pricing-amount">$100</div>
+      <div class="pricing-period">starting from</div>
+      <ul class="pricing-features">
+        <li>30–60 second edit</li>
+        <li>Music & motion graphics</li>
+        <li>Reels/TikTok ready</li>
+        <li>48hr delivery</li>
+      </ul>
+      <a href="#contact" class="pricing-btn pricing-btn-outline">Book Now</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-name">BRAND STARTER</div>
+      <p class="pricing-desc">The complete package to launch your personal brand.</p>
+      <div class="pricing-amount">$425</div>
+      <div class="pricing-period">full bundle</div>
+      <ul class="pricing-features">
+        <li>Full promo shoot</li>
+        <li>Hype edit included</li>
+        <li>Athlete bio written</li>
+        <li>Social profile optimization</li>
+        <li>48hr delivery</li>
+      </ul>
+      <a href="#contact" class="pricing-btn pricing-btn-filled">Book Now</a>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">RECRUITMENT PKG</div>
+      <p class="pricing-desc">Built to get you noticed by scouts and college coaches.</p>
+      <div class="pricing-amount">$375</div>
+      <div class="pricing-period">starting from</div>
+      <ul class="pricing-features">
+        <li>Full promo shoot</li>
+        <li>2–3 min highlight reel</li>
+        <li>Athlete bio card</li>
+        <li>48hr delivery</li>
+      </ul>
+      <a href="#contact" class="pricing-btn pricing-btn-outline">Book Now</a>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">CONTENT PACK</div>
+      <p class="pricing-desc">Stay consistent every month without lifting a finger.</p>
+      <div class="pricing-amount">$300</div>
+      <div class="pricing-period">per month</div>
+      <ul class="pricing-features">
+        <li>2 shoots per month</li>
+        <li>4 short-form edits</li>
+        <li>Captions included</li>
+        <li>Priority booking</li>
+      </ul>
+      <a href="#contact" class="pricing-btn pricing-btn-outline">Book Now</a>
+    </div>
+  </div>
+
+  <div class="portfolio-rate">
+    <div class="portfolio-rate-icon">🎯</div>
+    <div class="portfolio-rate-text">
+      <strong>Early Adopter Rate:</strong> Our first clients receive 30% off all packages. Limited spots available — DM us or fill out the form below to lock in your rate.
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Get In Touch</div>
+  <h2 class="section-title">BOOK YOUR SESSION</h2>
+  <div class="section-divider"></div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <p>Ready to get Drafted? Fill out the form and we'll get back to you within 24 hours to confirm your session details and date.</p>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">📍</div>
+        <div>
+          <div class="contact-detail-label">Location</div>
+          <div class="contact-detail-value">Greater Toronto Area, Ontario</div>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">✉️</div>
+        <div>
+          <div class="contact-detail-label">Email</div>
+          <div class="contact-detail-value">draftedstudios359@gmail.com</div>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">📸</div>
+        <div>
+          <div class="contact-detail-label">Instagram</div>
+          <div class="contact-detail-value">@draftedcontent</div>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">⚡</div>
+        <div>
+          <div class="contact-detail-label">Response Time</div>
+          <div class="contact-detail-value">Within 24 hours</div>
+        </div>
+      </div>
+    </div>
+    <form class="contact-form" name="booking" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleSubmit(event)">
+      <input type="hidden" name="form-name" value="booking">
+      <p style="display:none"><input name="bot-field"></p>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" name="first-name" class="form-input" placeholder="John" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" name="last-name" class="form-input" placeholder="Smith" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-input" placeholder="john@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sport</label>
+        <input type="text" name="sport" class="form-input" placeholder="Basketball, Boxing, Football...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Package</label>
+        <select name="package" class="form-select form-input">
+          <option value="">Select a package</option>
+          <option>Promo Shoot — from $150</option>
+          <option>Hype Edit — from $100</option>
+          <option>Brand Starter — $425</option>
+          <option>Recruitment Package — from $375</option>
+          <option>Content Pack — $300/month</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea name="message" class="form-textarea" placeholder="Tell us about yourself, your goals, and when you'd like to book..."></textarea>
+      </div>
+      <button type="submit" class="form-submit">Send Booking Request →</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">DRAFTED <span>STUDIOS</span></div>
+    <div class="footer-tagline" style="margin-top:6px">Let's Get You Drafted.</div>
+  </div>
+  <div class="footer-social">
+    <a href="https://instagram.com/draftedcontent" target="_blank">Instagram</a>
+    <a href="mailto:draftedstudios359@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.left = mouseX - 5 + 'px';
+    cursor.style.top = mouseY - 5 + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX - 18) * 0.12;
+    ringY += (mouseY - ringY - 18) * 0.12;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  // Hover effects
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'scale(2)';
+      ring.style.transform = 'scale(1.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'scale(1)';
+      ring.style.transform = 'scale(1)';
+    });
+  });
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.form-submit');
+    btn.textContent = 'Request Sent ✓';
+    btn.style.background = '#2a2a2a';
+    btn.style.color = '#C9A840';
+    setTimeout(() => {
+      btn.textContent = 'Send Booking Request →';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 3000);
+  }
+
+  // Scroll animations
+  const observer 
