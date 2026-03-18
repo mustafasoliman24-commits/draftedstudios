@@ -1159,7 +1159,7 @@
         <div class="contact-detail-icon">✉️</div>
         <div>
           <div class="contact-detail-label">Email</div>
-          <div class="contact-detail-value">draftedstudios359@gmail.com</div>
+          <div class="contact-detail-value">draftedstudios359&#64;gmail.com</div>
         </div>
       </div>
       <div class="contact-detail">
@@ -1177,7 +1177,7 @@
         </div>
       </div>
     </div>
-    <form class="contact-form" name="booking" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleSubmit(event)">
+    <form class="contact-form" action="https://formspree.io/f/xjgajylp" method="POST">
       <input type="hidden" name="form-name" value="booking">
       <p style="display:none"><input name="bot-field"></p>
       <div class="form-row">
@@ -1226,11 +1226,11 @@
   </div>
   <div class="footer-social">
     <a href="https://instagram.com/draftedcontent" target="_blank">Instagram</a>
-    <a href="mailto:draftedstudios359@gmail.com">Email</a>
+    <a href="https://mail.google.com/mail/?view=cm&to=draftedstudios359@gmail.com" target="_blank">Email</a>
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
@@ -1268,15 +1268,4 @@
   function handleSubmit(e) {
     e.preventDefault();
     const btn = e.target.querySelector('.form-submit');
-    btn.textContent = 'Request Sent ✓';
-    btn.style.background = '#2a2a2a';
-    btn.style.color = '#C9A840';
-    setTimeout(() => {
-      btn.textContent = 'Send Booking Request →';
-      btn.style.background = '';
-      btn.style.color = '';
-    }, 3000);
-  }
-
-  // Scroll animations
-  const observer 
+    btn.textContent 
